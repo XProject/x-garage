@@ -1,0 +1,3 @@
+Shared = {}
+
+Shared.currentResourceName = GetCurrentResourceName()

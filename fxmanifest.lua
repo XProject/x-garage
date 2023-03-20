@@ -13,6 +13,7 @@ shared_scripts {
 }
 
 server_scripts {
+    "data/**/*.lua",
     "server/*.lua"
 }
 
