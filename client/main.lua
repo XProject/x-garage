@@ -14,3 +14,9 @@ CreateThread(function()
     end
 end)
 ]]
+
+Config.Garages = GlobalState[Shared.State.globalGarages]
+
+AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, value)
+    Config.Garages = value
+end)

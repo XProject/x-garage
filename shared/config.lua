@@ -1,5 +1,5 @@
 Config = {}
 
-Config.Locations = {}
+Config.Garages = {}
 
 Config.Interiors = {}

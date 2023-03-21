@@ -1,18 +1,11 @@
-table.insert(Config.Locations, {
-    coords = {
-        points = {
-            vector3(0, 0, 0),
-        },
-        thickness = 1
-        
-        sphere = vector3(0, 0, 0),
-        radius = 1,
-        
-        box = vector3(0, 0, 0),
-        rotation = vector3(0, 0, 0),
-        size = vector3(0, 0, 0),
-    },
+table.insert(Config.Garages, {
+    label = "Arcadius Garages",
     interior = "arcadius_garages",
+    points = {
+        vector3(0, 0, 0),
+        vector3(0, 0, 0),
+        vector3(0, 0, 0),
+    },
     blip = {
         active = true,
         type = 106,
@@ -28,9 +21,7 @@ table.insert(Config.Locations, {
                     vector4(0, 0, 0, 0)
                 }
             },
-            inside = {
-                coords = vector3(0, 0, 0),
-            }
+            inside = vector3(0, 0, 0),
         }
     }
 })

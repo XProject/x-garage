@@ -9,6 +9,7 @@ repository  "https://github.com/XProject/x-garage"
 description "Project-X Garage: Garage System with GTA IPLs for FiveM's OneSync Infinity"
 
 shared_scripts {
+    "@ox_lib/init.lua",
     "shared/*.lua",
 }
 
