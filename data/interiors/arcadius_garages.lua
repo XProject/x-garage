@@ -1,9 +1,14 @@
-table.insert(Config.Interiors, {
+Config.Interiors["arcadius_garages"] = {
     label = "Arcadius Garage",
     garages = {
         {-- #1 => -191.0133, -579.1428, 135.0000
             interiorId = 253441,
             ipl = "imp_dt1_02_cargarage_a",
+            spawns = {
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+            },
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -37,6 +42,11 @@ table.insert(Config.Interiors, {
         {-- #2 => -117.4989, -568.1132, 135.0000
             interiorId = 253697,
             ipl = "imp_dt1_02_cargarage_b",
+            spawns = {
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+            },
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -70,6 +80,11 @@ table.insert(Config.Interiors, {
         {-- #3 => -117.4989, -568.1132, 135.0000
             interiorId = 253953,
             ipl = "imp_dt1_02_cargarage_c",
+            spawns = {
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+            },
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -103,6 +118,11 @@ table.insert(Config.Interiors, {
         {-- #4 => -146.6166, -596.6301, 166.0000
             interiorId = 254209,
             ipl = "imp_dt1_02_modgarage",
+            spawns = {
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+                vector4(0, 0, 0, 0),
+            },
             floor = {
                 [""] = 0,
                 floor_vinyl_01 = 1000,
