@@ -1,7 +1,7 @@
 Config.Interiors["arcadius_garages"] = {
-    label = "Arcadius Garage",
     garages = {
         {-- #1 => -191.0133, -579.1428, 135.0000
+            label = "Arcadius Garage 1",
             interiorId = 253441,
             ipl = "imp_dt1_02_cargarage_a",
             spawns = {
@@ -40,6 +40,7 @@ Config.Interiors["arcadius_garages"] = {
             }
         },
         {-- #2 => -117.4989, -568.1132, 135.0000
+            label = "Arcadius Garage 2",
             interiorId = 253697,
             ipl = "imp_dt1_02_cargarage_b",
             spawns = {
@@ -78,6 +79,7 @@ Config.Interiors["arcadius_garages"] = {
             }
         },
         {-- #3 => -117.4989, -568.1132, 135.0000
+            label = "Arcadius Garage 3",
             interiorId = 253953,
             ipl = "imp_dt1_02_cargarage_c",
             spawns = {
@@ -116,6 +118,7 @@ Config.Interiors["arcadius_garages"] = {
             }
         },
         {-- #4 => -146.6166, -596.6301, 166.0000
+            label = "Arcadius Mod Garage",
             interiorId = 254209,
             ipl = "imp_dt1_02_modgarage",
             spawns = {

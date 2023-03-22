@@ -1,4 +1,5 @@
 
+local zone = {}
 local garageZones = {}
 local garageBlips = {}
 
@@ -16,48 +17,53 @@ local function createGarageBlip(garageIndex)
     garageBlips[garageIndex] = blip
 end
 
-local function onGarageInsideZoneEnter(data)
+function zone.onGarageInsideZoneEnter(data)
+    local garageData = Config.Garages[data.garageIndex]
+    garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone = true
+
+    CreateThread(function()
+        lib.showTextUI(("[E] - Open %s Menu"):format(garageData.label))
+        while garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone do
+            if IsControlJustReleased(0, 38) then
+                action.onGarageRequestToEnter(data)
+                break
+            end
+            Wait(0)
+        end
+        lib.hideTextUI()
+    end)
 end
 
-local function onGarageInsideZoneExit(data)
-    
+function zone.onGarageInsideZoneExit(data)
+    garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone = false
 end
 
-local function onGarageZoneEnter(data)
+function zone.onGarageZoneEnter(data)
     local garageData = Config.Garages[data.garageIndex]
     
-    if garageData.gates.outside then
+    for i = 1, #garageData.gates do
         local sphereZone = lib.zone.sphere({
-            coords = garageData.gates.outside.coords,
-            radius = garageData.gates.outside.coords,
+            coords = garageData.gates[i].outside.coords,
+            radius = garageData.gates[i].outside.coords,
             debug = Config.Debug,
-            onEnter = onGarageInsideZoneEnter,
-            onExit = onGarageInsideZoneExit
+            onEnter = zone.onGarageInsideZoneEnter,
+            onExit = zone.onGarageInsideZoneExit,
+            garageIndex = data.garageIndex,
+            insideZoneIndex = i
         })
-        garageZones[data.garageIndex].insideZones[1] = sphereZone
-    else
-        for i = 1, #garageData.gates do
-            local sphereZone = lib.zone.sphere({
-                coords = garageData.gates[i].outside.coords,
-                radius = garageData.gates[i].outside.coords,
-                debug = Config.Debug,
-                onEnter = onGarageInsideZoneEnter,
-                onExit = onGarageInsideZoneExit
-            })
-            garageZones[data.garageIndex].insideZones[i] = sphereZone
-        end
+        garageZones[data.garageIndex].insideZones[i] = {zone = sphereZone, inZone = false}
     end
 end
 
-local function onGarageZoneExit(data)
+function zone.onGarageZoneExit(data)
     for i = 1, #garageZones[data.garageIndex].insideZones do
-        onGarageInsideZoneExit(garageZones[data.garageIndex].insideZones[i])
-        garageZones[data.garageIndex].insideZones[i]:remove()
+        zone.onGarageInsideZoneExit(garageZones[data.garageIndex].insideZones[i].zone)
+        garageZones[data.garageIndex].insideZones[i].zone:remove()
         garageZones[data.garageIndex].insideZones[i] = nil
     end
 end
 
-local function setupGarage(garageIndex)
+function zone.setupGarage(garageIndex)
     local garageData = Config.Garages[garageIndex]
     if not garageData.points then return error("poly points are not set") end
 
@@ -65,10 +71,9 @@ local function setupGarage(garageIndex)
         points = garageData.points,
         thickness = garageData.thickness,
         debug = Config.Debug,
-        onEnter = onGarageZoneEnter,
-        onExit = onGarageZoneExit,
+        onEnter = zone.onGarageZoneEnter,
+        onExit = zone.onGarageZoneExit,
         garageIndex = garageIndex,
-        -- garage = garageData,
     })
     garageZones[garageIndex] = {zone = polyZone, insideZones = {}}
 
@@ -78,9 +83,11 @@ end
 
 local function initialize()
     SetTimeout(1000, function()
-        print(("^7[^2%s^7] HAS LOADED ^5%s^7 GARAGES(S)"):format(Shared.currentResourceName:upper(), #Config.Locations))
+        print(("^7[^2%s^7] HAS LOADED ^5%s^7 GARAGES(S)"):format(Shared.currentResourceName:upper(), #Config.Garages))
         for index = 1, #Config.Garages do
             setupGarage(index)
         end
     end)
 end
+
+return zone
