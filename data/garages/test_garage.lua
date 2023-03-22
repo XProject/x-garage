@@ -1,6 +1,7 @@
 table.insert(Config.Garages, {
     label = "Arcadius Garages",
     interior = "arcadius_garages",
+    price = 10000,
     points = {
         vector3(0, 0, 0),
         vector3(0, 0, 0),

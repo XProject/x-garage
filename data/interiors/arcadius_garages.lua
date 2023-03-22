@@ -1,14 +1,25 @@
 Config.Interiors["arcadius_garages"] = {
-    garages = {
-        {-- #1 => -191.0133, -579.1428, 135.0000
-            label = "Arcadius Garage 1",
-            interiorId = 253441,
-            ipl = "imp_dt1_02_cargarage_a",
-            spawns = {
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-            },
+    {-- #1 => -191.0133, -579.1428, 135.0000
+        label = "Arcadius Garage 1",
+        interiorId = 253441,
+        ipl = "imp_dt1_02_cargarage_a",
+        object = "GetImportCEOGarage1Object",
+        func = {
+            clear = function(object)
+                object.Part.Clear()
+            end,
+            loadDefault = function(object)
+                object.Style.Set(object.Part.Garage1, object.Style.plain)
+                object.Numbering.Set(object.Part.Garage1, object.Numbering.Level1.style1)
+                object.Lighting.Set(object.Part.Garage1, object.Lighting.none, true)
+            end,
+        }
+        spawns = {
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
+        },
+        decors = {
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -38,16 +49,18 @@ Config.Interiors["arcadius_garages"] = {
                 lighting_option08 = 1000,
                 lighting_option09 = 1000
             }
+        }
+    },
+    {-- #2 => -117.4989, -568.1132, 135.0000
+        label = "Arcadius Garage 2",
+        interiorId = 253697,
+        ipl = "imp_dt1_02_cargarage_b",
+        spawns = {
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
         },
-        {-- #2 => -117.4989, -568.1132, 135.0000
-            label = "Arcadius Garage 2",
-            interiorId = 253697,
-            ipl = "imp_dt1_02_cargarage_b",
-            spawns = {
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-            },
+        decors = {
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -77,16 +90,18 @@ Config.Interiors["arcadius_garages"] = {
                 lighting_option08 = 1000,
                 lighting_option09 = 1000
             }
+        }
+    },
+    {-- #3 => -117.4989, -568.1132, 135.0000
+        label = "Arcadius Garage 3",
+        interiorId = 253953,
+        ipl = "imp_dt1_02_cargarage_c",
+        spawns = {
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
         },
-        {-- #3 => -117.4989, -568.1132, 135.0000
-            label = "Arcadius Garage 3",
-            interiorId = 253953,
-            ipl = "imp_dt1_02_cargarage_c",
-            spawns = {
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-            },
+        decors = {
             styles = {
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
@@ -116,16 +131,18 @@ Config.Interiors["arcadius_garages"] = {
                 lighting_option08 = 1000,
                 lighting_option09 = 1000
             }
+        }
+    },
+    {-- #4 => -146.6166, -596.6301, 166.0000
+        label = "Arcadius Mod Garage",
+        interiorId = 254209,
+        ipl = "imp_dt1_02_modgarage",
+        spawns = {
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
+            vector4(0, 0, 0, 0),
         },
-        {-- #4 => -146.6166, -596.6301, 166.0000
-            label = "Arcadius Mod Garage",
-            interiorId = 254209,
-            ipl = "imp_dt1_02_modgarage",
-            spawns = {
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-                vector4(0, 0, 0, 0),
-            },
+        decors = {
             floor = {
                 [""] = 0,
                 floor_vinyl_01 = 1000,
@@ -148,6 +165,6 @@ Config.Interiors["arcadius_garages"] = {
                 floor_vinyl_18 = 1000,
                 floor_vinyl_19 = 1000,
             }
-        },
-    }
-})
+        }
+    },
+}

@@ -2,15 +2,11 @@ lib.callback.register(Shared.Callback.startGaragePreview, function(source, garag
     local garageCoords = Config.Garages[garageIndex]?.gates?[gateIndex]?.inside
     if garageCoords return false end
 
+    -- TODO: distance check
+
     if not exports["x-instance"]:doesInstanceExist("garage_preview") then
         exports["x-instance"]:addInstanceType("garage_preview")
     end
 
-    local response = exports["x-instance"]:addPlayerToInstance(source, "garage_preview")
-    if not response then return false end
-
-    local playerPed = GetPlayerPed(source)
-    SetEntityCoords(playerPed, table.unpack(garageCoords))
-    
-    return true
+    return exports["x-instance"]:addPlayerToInstance(source, "garage_preview")
 end)
