@@ -19,11 +19,11 @@ end
 
 function zone.onGarageInsideZoneEnter(data)
     local garageData = Config.Garages[data.garageIndex]
-    garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone = true
+    garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = true
 
     CreateThread(function()
         lib.showTextUI(("[E] - Open %s Menu"):format(garageData.label))
-        while garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone do
+        while garageZones[data.garageIndex].insideZones[data.gateIndex].inZone do
             if IsControlJustReleased(0, 38) then
                 action.onGarageRequestToEnter(data)
                 break
@@ -35,7 +35,7 @@ function zone.onGarageInsideZoneEnter(data)
 end
 
 function zone.onGarageInsideZoneExit(data)
-    garageZones[data.garageIndex].insideZones[data.insideZoneIndex].inZone = false
+    garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = false
 end
 
 function zone.onGarageZoneEnter(data)
@@ -49,7 +49,7 @@ function zone.onGarageZoneEnter(data)
             onEnter = zone.onGarageInsideZoneEnter,
             onExit = zone.onGarageInsideZoneExit,
             garageIndex = data.garageIndex,
-            insideZoneIndex = i
+            gateIndex = i
         })
         garageZones[data.garageIndex].insideZones[i] = {zone = sphereZone, inZone = false}
     end

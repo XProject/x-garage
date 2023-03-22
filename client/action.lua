@@ -74,7 +74,7 @@ function action.openUnboughtGarageMenu(data)
         if true then -- check for ownership of the garage to show un-bought ones
             options[#options+1] = {
                 label = ("Buy %s"):format(interiorGarages[i].label),
-                args = {interiorName = garageData.interior, interiorIndex = i}
+                args = {name = garageData.interior, index = i}
             }
         end
     end
@@ -92,9 +92,10 @@ function action.openUnboughtGarageMenu(data)
         end
     },
     function(_, _, args)
-        local response = lib.callback.await("", false, args)
+        local response = lib.callback.await(Shared.Callback.startGaragePreview, false, data.garageIndex, data.gateIndex, args)
         if response then
             -- player is now instanced and teleported to the interior entrance
+            
         end
     end)
 end
