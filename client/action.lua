@@ -76,7 +76,7 @@ function Action.openUnboughtGarageMenu(data)
         if true then -- TODO: check for ownership of the garage to show un-bought ones
             options[#options+1] = {
                 label = ("Buy %s"):format(interiorGarages[i].label),
-                args = {index = i}
+                args = {interiorIndex = i}
             }
         end
     end
@@ -94,20 +94,20 @@ function Action.openUnboughtGarageMenu(data)
         end
     },
     function(_, _, args)
-        local response = StartGaragePreview(data.garageIndex, data.gateIndex)
+        local interiorIndex = args.interiorIndex
+        local response = StartGaragePreview(data.garageIndex, interiorIndex)
         if response then
             -- player is now instanced and teleported to the interior entrance
-            local index = args.index
-            if type(interiorGarages[index].object) == "string" then
-                interiorGarages[index].object = exports["bob74_ipl"][interiorGarages[index].object]()
+            if type(interiorGarages[interiorIndex].object) == "string" then
+                interiorGarages[interiorIndex].object = exports["bob74_ipl"][interiorGarages[interiorIndex].object]()
             end
 
-            local interiorObject = interiorGarages[index].object
+            local interiorObject = interiorGarages[interiorIndex].object
 
-            interiorGarages[index].func.clear(interiorObject)
-            interiorGarages[index].func.loadDefault(interiorObject)
+            interiorGarages[interiorIndex].func.clear(interiorObject)
+            interiorGarages[interiorIndex].func.loadDefault(interiorObject)
 
-            Action.onGaragePreview(data, index)
+            Action.onGaragePreview(data, interiorIndex)
         else
             lib.showMenu("outside_unbought_garage_menu")
             lib.notify({title = "preview not started"})

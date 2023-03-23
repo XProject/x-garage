@@ -18,14 +18,14 @@ local function createGarageBlip(garageIndex)
 end
 
 function Zone.onGarageInsideZoneEnter(data)
-    if garageZones[data.garageIndex].insideZones[data.gateIndex].inZone then return end
-    garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = true
+    if garageZones[data.garageIndex].insideZone.inZone then return end
+    garageZones[data.garageIndex].insideZone.inZone = true
 
     CreateThread(function()
         local garageData = Config.Garages[data.garageIndex]
         lib.showTextUI(("[E] - Open %s Menu"):format(garageData.label))
 
-        while garageZones[data.garageIndex].insideZones[data.gateIndex].inZone do
+        while garageZones[data.garageIndex].insideZone.inZone do
             if IsControlJustReleased(0, 38) then
                 if not cache.seat or cache.seat == -1 then
                     Action.onGarageRequestToEnter(data)
@@ -43,32 +43,26 @@ function Zone.onGarageInsideZoneEnter(data)
 end
 
 function Zone.onGarageInsideZoneExit(data)
-    garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = false
+    garageZones[data.garageIndex].insideZone.inZone = false
 end
 
 function Zone.onGarageZoneEnter(data)
     local garageData = Config.Garages[data.garageIndex]
-
-    for i = 1, #garageData.gates do
-        local sphereZone = lib.zones.sphere({
-            coords = garageData.gates[i].outside.coords,
-            -- radius = garageData.gates[i].outside.coords,
-            debug = Config.Debug,
-            onEnter = Zone.onGarageInsideZoneEnter,
-            onExit = Zone.onGarageInsideZoneExit,
-            garageIndex = data.garageIndex,
-            gateIndex = i
-        })
-        garageZones[data.garageIndex].insideZones[i] = {zone = sphereZone, inZone = false}
-    end
+    local sphereZone = lib.zones.sphere({
+        coords = garageData.outside.coords,
+        radius = garageData.outside.radius,
+        debug = Config.Debug,
+        onEnter = Zone.onGarageInsideZoneEnter,
+        onExit = Zone.onGarageInsideZoneExit,
+        garageIndex = data.garageIndex
+    })
+    garageZones[data.garageIndex].insideZone = {zone = sphereZone, inZone = false}
 end
 
 function Zone.onGarageZoneExit(data)
-    for i = 1, #garageZones[data.garageIndex].insideZones do
-        Zone.onGarageInsideZoneExit(garageZones[data.garageIndex].insideZones[i].Zone)
-        garageZones[data.garageIndex].insideZones[i].zone:remove()
-        garageZones[data.garageIndex].insideZones[i] = nil
-    end
+    Zone.onGarageInsideZoneExit(garageZones[data.garageIndex].insideZone.zone)
+    garageZones[data.garageIndex].insideZone.zone:remove()
+    garageZones[data.garageIndex].insideZone.zone = nil
 end
 
 function Zone.setupGarage(garageIndex)

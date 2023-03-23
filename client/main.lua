@@ -24,12 +24,13 @@ AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, v
     Config.Garages = value
 end)
 
-function StartGaragePreview(garageIndex, gateIndex)
-    local response = lib.callback.await(Shared.Callback.startGaragePreview, 1000, garageIndex, gateIndex)
+function StartGaragePreview(garageIndex, interiorIndex)
+    local response = lib.callback.await(Shared.Callback.startGaragePreview, 1000)
     if response then
         coordsBeforeGaragePreview = cache.coords
         vehicleBeforeGaragePreview = cache.seat == -1 and cache.vehicle
-        local garageCoords = Config.Garages[garageIndex]?.gates?[gateIndex]?.inside
+        local garageInterior = Config.Garages[garageIndex].interior
+        local garageCoords = Config.Interiors[garageInterior][interiorIndex].coords
 
         ---@diagnostic disable-next-line: missing-parameter
         SetEntityCoords(cache.ped, garageCoords.x, garageCoords.y, garageCoords.z)

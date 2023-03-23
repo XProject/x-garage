@@ -16,15 +16,11 @@ table.insert(Config.Garages, {
         color = 27,
         size = 0.8
     },
-    gates = {
-        {
-            outside = {
-                coords = vector3(-145.75, -580.11, 32.42),
-                spawns = {
-                    vector4(-138.06, -586.77, 31.78, 68.72),
-                }
-            },
-            inside = vector4(-198.6, -577.91, 136.0, 224.22),
+    outside = {
+        coords = vector3(-145.75, -580.11, 32.42),
+        radius = 5.0,
+        spawns = {
+            vector4(-138.06, -586.77, 31.78, 68.72),
         }
-    }
+    },
 })
