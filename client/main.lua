@@ -23,8 +23,8 @@ AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, v
     Config.Garages = value
 end)
 
-function startGaragePreview(garageIndex, gateIndex)
-    local response = lib.callback.await(Shared.Callback.startGaragePreview, false, garageIndex, gateIndex)
+function StartGaragePreview(garageIndex, gateIndex)
+    local response = lib.callback.await(Shared.Callback.startGaragePreview, 100, garageIndex, gateIndex)
     if response then
         coordsBeforeGaragePreview = cache.coords
         vehicleBeforeGaragePreview = cache.seat == -1 and cache.vehicle
@@ -36,8 +36,8 @@ function startGaragePreview(garageIndex, gateIndex)
     return response
 end
 
-function stopGaragePreview()
-    local response = lib.callback.await(Shared.Callback.stopGaragePreview, false)
+function StopGaragePreview()
+    local response = lib.callback.await(Shared.Callback.stopGaragePreview, 100)
     if response then
         SetEntityCoords(cache.ped, garageCoords.x, garageCoords.y, garageCoords.z)
         if vehicleBeforeGaragePreview then
@@ -48,4 +48,8 @@ function stopGaragePreview()
         vehicleBeforeGaragePreview = nil
     end
     return response
+end
+
+function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
+    return lib.callback.await(Shared.Callback.buyGarage, 1000, garageIndex, garageInteriorIndex, selectedDecors)
 end

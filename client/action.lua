@@ -96,7 +96,7 @@ function action.openUnboughtGarageMenu(data)
         end
     },
     function(_, _, args)
-        local response = startGaragePreview(data.garageIndex, data.gateIndex)
+        local response = StartGaragePreview(data.garageIndex, data.gateIndex)
         if response then
             -- player is now instanced and teleported to the interior entrance
             local index = args.index
@@ -116,7 +116,7 @@ function action.openUnboughtGarageMenu(data)
     lib.showMenu("outside_unbought_garage_menu")
 end
 
-function action.onGaragePreview(data, interiorGarageIndex)
+function action.onGaragePreview(data, garageInteriorIndex)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
@@ -124,8 +124,8 @@ function action.onGaragePreview(data, interiorGarageIndex)
     local selectedDecors = {}
     local garagePrice = garageData.price
 
-    if interiorGarages[interiorGarageIndex].decors then
-        for decorKey, decorData in pairs(interiorGarages[interiorGarageIndex].decors) do
+    if interiorGarages[garageInteriorIndex].decors then
+        for decorKey, decorData in pairs(interiorGarages[garageInteriorIndex].decors) do
             local values = {}
             local valuesCount = 0
             
@@ -138,39 +138,62 @@ function action.onGaragePreview(data, interiorGarageIndex)
             options[optionsCount] = {
                 label = decorKey,
                 values = values,
-                defaultIndex = 1
+                defaultIndex = 1,
+                args = {decorKey = decorKey}
             }
 
-            selectedDecors[decorKey] = {decorName = values[1], decorPrice = decorData[values[1]]}
-            garagePrice += selectedDecors[decorKey].decorPrice
+            selectedDecors[decorKey] = values[1]
+            garagePrice += decorData[values[1]]
         end
     end
 
     optionsCount += 1
     options[optionsCount] = {
-        label = "Buy",
-        description = ("Buy this garage for $%s"):format(garagePrice)
-        args = {price = garagePrice}
+        label = ("Price: $%s"):format(garagePrice),
+        description = ("Click to buy this garage for $%s"):format(garagePrice)
+        args = {decors = selectedDecors},
+        close = false
     }
     
     lib.registerMenu({
         id = "preview_garage",
-        title = ("%s - %s"):format(Shared.currentResourceName, interiorGarages[interiorGarageIndex].label),
+        title = ("%s - %s"):format(Shared.currentResourceName, interiorGarages[garageInteriorIndex].label),
         disableInput = true,
         canClose = true,
         options = options,
         onSideScroll = function(selected, scrollIndex, args)
-            -- modify price
+            local currentDecorName = options[selected].values[scrollIndex]
+            local previousDecorPrice = interiorGarages[garageInteriorIndex].decors[args.decorKey][selectedDecors[args.decorKey]]
+            local currentDecorPrice = interiorGarages[garageInteriorIndex].decors[args.decorKey][currentDecorName]
+
+            selectedDecors[args.decorKey] = currentDecorName
+            garagePrice -= previousDecorPrice
+            garagePrice += currentDecorPrice
+
+            lib.setMenuOptions("preview_garage", {
+                label = ("Price: $%s"):format(garagePrice),
+                description = ("Click to buy this garage for $%s"):format(garagePrice)
+                args = {decors = selectedDecors},
+                close = false
+            }, optionsCount)
         end,
         onClose = function(keyPressed)
             if keyPressed then
-                stopGaragePreview()
+                StopGaragePreview()
                 action.openUnboughtGarageMenu(data)
             end
         end
     },
     function(_, _, args)
-
+        if args.decors then
+            local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
+            if response then
+                StopGaragePreview()
+                zone.onGarageInsideZoneEnter(data)
+            else
+                lib.notify({title = message})
+            end
+        end
     end)
 
     lib.showMenu("preview_garage")
