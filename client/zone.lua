@@ -4,7 +4,7 @@ local garageZones = {}
 local garageBlips = {}
 
 local function createGarageBlip(garageIndex)
-    local garageData = Config.Locations[garageIndex]
+    local garageData = Config.Garages[garageIndex]
     if not garageData.blip or not garageData.blip.active then return end
     local blip = AddBlipForCoord(garageData.coords.x, garageData.coords.y, garageData.coords.z)
     SetBlipSprite(blip, garageData.blip.type)
@@ -25,7 +25,7 @@ function zone.onGarageInsideZoneEnter(data)
         lib.showTextUI(("[E] - Open %s Menu"):format(garageData.label))
         while garageZones[data.garageIndex].insideZones[data.gateIndex].inZone do
             if IsControlJustReleased(0, 38) then
-                action.onGarageRequestToEnter(data)
+                Action.onGarageRequestToEnter(data)
                 break
             end
             Wait(0)
@@ -40,11 +40,11 @@ end
 
 function zone.onGarageZoneEnter(data)
     local garageData = Config.Garages[data.garageIndex]
-    
+
     for i = 1, #garageData.gates do
-        local sphereZone = lib.zone.sphere({
+        local sphereZone = lib.zones.sphere({
             coords = garageData.gates[i].outside.coords,
-            radius = garageData.gates[i].outside.coords,
+            -- radius = garageData.gates[i].outside.coords,
             debug = Config.Debug,
             onEnter = zone.onGarageInsideZoneEnter,
             onExit = zone.onGarageInsideZoneExit,
@@ -67,9 +67,9 @@ function zone.setupGarage(garageIndex)
     local garageData = Config.Garages[garageIndex]
     if not garageData.points then return error("poly points are not set") end
 
-    local polyZone = lib.zone.poly({
+    local polyZone = lib.zones.poly({
         points = garageData.points,
-        thickness = garageData.thickness,
+        thickness = garageData.points_thickness,
         debug = Config.Debug,
         onEnter = zone.onGarageZoneEnter,
         onExit = zone.onGarageZoneExit,
@@ -85,9 +85,11 @@ local function initialize()
     SetTimeout(1000, function()
         print(("^7[^2%s^7] HAS LOADED ^5%s^7 GARAGES(S)"):format(Shared.currentResourceName:upper(), #Config.Garages))
         for index = 1, #Config.Garages do
-            setupGarage(index)
+            zone.setupGarage(index)
         end
     end)
 end
+
+initialize()
 
 return zone

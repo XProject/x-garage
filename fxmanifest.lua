@@ -10,7 +10,8 @@ description "Project-X Garage: Garage System with GTA IPLs for FiveM's OneSync I
 
 dependencies {
     "bob74_ipl",
-    "ox_lib"
+    "ox_lib",
+    "x-instance"
 }
 
 shared_scripts {
@@ -24,5 +25,6 @@ server_scripts {
 }
 
 client_scripts {
-    "client/*.lua",
+    "client/main.lua",
+    "client/action.lua",
 }

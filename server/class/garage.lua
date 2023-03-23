@@ -4,7 +4,7 @@
 ---@field ipl string
 ---@field interiorId number
 ---@field decors table
----@field parkings parking[]
+---@field parkings xParking[]
 ---@field capacity number
 ---@field vehicles table
 

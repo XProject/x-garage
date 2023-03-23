@@ -1,8 +1,8 @@
-local action = {}
+Action = {}
 
 local zone = lib.require("client.zone")
 
-function action.onGarageRequestToEnter(data)
+function Action.onGarageRequestToEnter(data)
     local garageData = Config.Garages[data.garageIndex]
 
     lib.registerMenu({
@@ -28,16 +28,16 @@ function action.onGarageRequestToEnter(data)
     },
     function(_, _, args)
         if args.menu == "outside_bought_garage_menu" then
-            action.openBoughtGarageMenu(data)
+            Action.openBoughtGarageMenu(data)
         elseif args.menu == "outside_unbought_garage_menu" then
-            action.openUnboughtGarageMenu(data)
+            Action.openUnboughtGarageMenu(data)
         end
     end)
-    
+
     lib.showMenu("outside_garage_menu")
 end
 
-function action.openBoughtGarageMenu(data)
+function Action.openBoughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
@@ -58,18 +58,18 @@ function action.openBoughtGarageMenu(data)
         options = options,
         onClose = function(keyPressed)
             if keyPressed then
-                action.onGarageRequestToEnter(data)
+                Action.onGarageRequestToEnter(data)
             end
         end
     },
     function(_, _, args)
-        
+
     end)
 
     lib.showMenu("outside_bought_garage_menu")
 end
 
-function action.openUnboughtGarageMenu(data)
+function Action.openUnboughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
@@ -91,7 +91,7 @@ function action.openUnboughtGarageMenu(data)
         options = options,
         onClose = function(keyPressed)
             if keyPressed then
-                action.onGarageRequestToEnter(data)
+                Action.onGarageRequestToEnter(data)
             end
         end
     },
@@ -109,14 +109,17 @@ function action.openUnboughtGarageMenu(data)
             interiorGarages[index].func.clear(interiorObject)
             interiorGarages[index].func.loadDefault(interiorObject)
 
-            action.onGaragePreview(data, index)
+            Action.onGaragePreview(data, index)
+        else
+            lib.showMenu("outside_unbought_garage_menu")
+            lib.notify({title = "preview not started"})
         end
     end)
 
     lib.showMenu("outside_unbought_garage_menu")
 end
 
-function action.onGaragePreview(data, garageInteriorIndex)
+function Action.onGaragePreview(data, garageInteriorIndex)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
@@ -128,7 +131,7 @@ function action.onGaragePreview(data, garageInteriorIndex)
         for decorKey, decorData in pairs(interiorGarages[garageInteriorIndex].decors) do
             local values = {}
             local valuesCount = 0
-            
+
             for decorName in pairs(decorData) do
                 valuesCount += 1
                 values[valuesCount] = decorName
@@ -150,11 +153,11 @@ function action.onGaragePreview(data, garageInteriorIndex)
     optionsCount += 1
     options[optionsCount] = {
         label = ("Price: $%s"):format(garagePrice),
-        description = ("Click to buy this garage for $%s"):format(garagePrice)
+        description = ("Click to buy this garage for $%s"):format(garagePrice),
         args = {decors = selectedDecors},
         close = false
     }
-    
+
     lib.registerMenu({
         id = "preview_garage",
         title = ("%s - %s"):format(Shared.currentResourceName, interiorGarages[garageInteriorIndex].label),
@@ -172,7 +175,7 @@ function action.onGaragePreview(data, garageInteriorIndex)
 
             lib.setMenuOptions("preview_garage", {
                 label = ("Price: $%s"):format(garagePrice),
-                description = ("Click to buy this garage for $%s"):format(garagePrice)
+                description = ("Click to buy this garage for $%s"):format(garagePrice),
                 args = {decors = selectedDecors},
                 close = false
             }, optionsCount)
@@ -180,7 +183,7 @@ function action.onGaragePreview(data, garageInteriorIndex)
         onClose = function(keyPressed)
             if keyPressed then
                 StopGaragePreview()
-                action.openUnboughtGarageMenu(data)
+                Action.openUnboughtGarageMenu(data)
             end
         end
     },

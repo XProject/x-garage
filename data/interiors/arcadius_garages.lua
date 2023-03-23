@@ -13,7 +13,7 @@ Config.Interiors["arcadius_garages"] = {
                 object.Numbering.Set(object.Part.Garage1, object.Numbering.Level1.style1)
                 object.Lighting.Set(object.Part.Garage1, object.Lighting.none, true)
             end,
-        }
+        },
         spawns = {
             vector4(0, 0, 0, 0),
             vector4(0, 0, 0, 0),
