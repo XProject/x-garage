@@ -57,3 +57,18 @@ end
 function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
     return lib.callback.await(Shared.Callback.buyGarage, 1000, garageIndex, garageInteriorIndex, selectedDecors)
 end
+
+function FadeScreen(state, duration)
+    duration = duration or 2000
+    if state then
+        DoScreenFadeIn(duration or 2000)
+    else
+        DoScreenFadeOut(duration or 2000)
+    end
+    return duration
+end
+
+function FadeScreenAndWait(duration)
+    Wait(FadeScreen(true, duration))
+    Wait(FadeScreen(false, duration))
+end

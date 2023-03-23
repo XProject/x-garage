@@ -95,8 +95,8 @@ function Action.openUnboughtGarageMenu(data)
     },
     function(_, _, args)
         local interiorIndex = args.interiorIndex
-        local response = StartGaragePreview(data.garageIndex, interiorIndex)
-        if response then
+        Wait(FadeScreen(true))
+        if StartGaragePreview(data.garageIndex, interiorIndex) then
             -- player is now instanced and teleported to the interior entrance
             if type(interiorGarages[interiorIndex].object) == "string" then
                 interiorGarages[interiorIndex].object = exports["bob74_ipl"][interiorGarages[interiorIndex].object]()
@@ -107,8 +107,10 @@ function Action.openUnboughtGarageMenu(data)
             interiorGarages[interiorIndex].func.clear(interiorObject)
             interiorGarages[interiorIndex].func.loadDefault(interiorObject)
 
+            Wait(FadeScreen(false))
             Action.onGaragePreview(data, interiorIndex)
         else
+            Wait(FadeScreen(false))
             lib.showMenu("outside_unbought_garage_menu")
             lib.notify({title = "preview not started"})
         end
@@ -186,8 +188,12 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         end,
         onClose = function(keyPressed)
             if keyPressed then
-                StopGaragePreview()
-                Action.openUnboughtGarageMenu(data)
+                if StopGaragePreview() then
+                    FadeScreenAndWait()
+                    Action.openUnboughtGarageMenu(data)
+                else
+                    lib.showMenu("preview_garage")
+                end
             end
         end
     },
@@ -195,8 +201,16 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         if args.decors then
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
-                StopGaragePreview()
-                Zone.onGarageInsideZoneEnter(data)
+                lib.hideMenu()
+                Wait(FadeScreen(true))
+                while IsScreenFadedIn() do
+                    if StopGaragePreview() then
+                        Wait(FadeScreen(false))
+                        Zone.onGarageInsideZoneEnter(data)
+                        break
+                    end
+                    Wait(1000)
+                end
             else
                 lib.notify({title = message})
             end
