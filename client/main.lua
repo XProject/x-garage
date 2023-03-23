@@ -16,7 +16,6 @@ end)
 ]]
 
 Config.Garages = GlobalState[Shared.State.globalGarages]
-Config.Interiors = GlobalState[Shared.State.globalInteriors]
 local coordsBeforeGaragePreview
 local vehicleBeforeGaragePreview
 
@@ -25,21 +24,16 @@ AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, v
     Config.Garages = value
 end)
 
----@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler(Shared.State.globalInteriors, nil, function(bagName, _, value)
-    Config.Interiors = value
-end)
-
 function StartGaragePreview(garageIndex, gateIndex)
     local response = lib.callback.await(Shared.Callback.startGaragePreview, 1000, garageIndex, gateIndex)
     if response then
         coordsBeforeGaragePreview = cache.coords
-        --[[vehicleBeforeGaragePreview = cache.seat == -1 and cache.vehicle
+        vehicleBeforeGaragePreview = cache.seat == -1 and cache.vehicle
         local garageCoords = Config.Garages[garageIndex]?.gates?[gateIndex]?.inside
 
         ---@diagnostic disable-next-line: missing-parameter
         SetEntityCoords(cache.ped, garageCoords.x, garageCoords.y, garageCoords.z)
-        SetEntityHeading(cache.ped, garageCoords.w)]]
+        SetEntityHeading(cache.ped, garageCoords.w)
     end
     return response
 end

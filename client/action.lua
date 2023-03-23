@@ -1,7 +1,5 @@
 Action = {}
 
-local zone = lib.require("client.zone")
-
 function Action.onGarageRequestToEnter(data)
     local garageData = Config.Garages[data.garageIndex]
 
@@ -22,7 +20,7 @@ function Action.onGarageRequestToEnter(data)
         },
         onClose = function(keyPressed)
             if keyPressed then
-                zone.onGarageInsideZoneEnter(data)
+                Zone.onGarageInsideZoneEnter(data)
             end
         end
     },
@@ -78,7 +76,7 @@ function Action.openUnboughtGarageMenu(data)
         if true then -- TODO: check for ownership of the garage to show un-bought ones
             options[#options+1] = {
                 label = ("Buy %s"):format(interiorGarages[i].label),
-                args = {name = garageData.interior, index = i}
+                args = {index = i}
             }
         end
     end
@@ -133,8 +131,10 @@ function Action.onGaragePreview(data, garageInteriorIndex)
             local valuesCount = 0
 
             for decorName in pairs(decorData) do
-                valuesCount += 1
-                values[valuesCount] = decorName
+                if decorName ~= "set" and type(decorData[decorName]) ~= "function" then
+                    valuesCount += 1
+                    values[valuesCount] = decorName
+                end
             end
 
             optionsCount += 1
@@ -147,6 +147,8 @@ function Action.onGaragePreview(data, garageInteriorIndex)
 
             selectedDecors[decorKey] = values[1]
             garagePrice += decorData[values[1]]
+
+            interiorGarages[garageInteriorIndex].decors[decorKey].set(interiorGarages[garageInteriorIndex].object, values[1])
         end
     end
 
@@ -161,7 +163,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
     lib.registerMenu({
         id = "preview_garage",
         title = ("%s - %s"):format(Shared.currentResourceName, interiorGarages[garageInteriorIndex].label),
-        disableInput = true,
+        disableInput = false,
         canClose = true,
         options = options,
         onSideScroll = function(selected, scrollIndex, args)
@@ -179,6 +181,8 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 args = {decors = selectedDecors},
                 close = false
             }, optionsCount)
+
+            interiorGarages[garageInteriorIndex].decors[args.decorKey].set(interiorGarages[garageInteriorIndex].object, currentDecorName)
         end,
         onClose = function(keyPressed)
             if keyPressed then
@@ -192,7 +196,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
                 StopGaragePreview()
-                zone.onGarageInsideZoneEnter(data)
+                Zone.onGarageInsideZoneEnter(data)
             else
                 lib.notify({title = message})
             end

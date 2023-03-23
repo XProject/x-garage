@@ -9,6 +9,7 @@ Config.Interiors["arcadius_garages"] = {
                 object.Part.Clear()
             end,
             loadDefault = function(object)
+                object.Part.Load(object.Part.Garage1)
                 object.Style.Set(object.Part.Garage1, object.Style.plain)
                 object.Numbering.Set(object.Part.Garage1, object.Numbering.Level1.style1)
                 object.Lighting.Set(object.Part.Garage1, object.Lighting.none, true)
@@ -21,12 +22,18 @@ Config.Interiors["arcadius_garages"] = {
         },
         decors = {
             styles = {
+                set = function(object, decor)
+                    object.Style.Set(object.Part.Garage1, decor, true)
+                end,
                 garage_decor_01 = 1000,
                 garage_decor_02 = 0,
                 garage_decor_03 = 1000,
                 garage_decor_04 = 1000
             },
             numbering = {
+                set = function(object, decor)
+                    object.Numbering.Set(object.Part.Garage1, decor, true)
+                end,
                 numbering_style01_n1 = 0,
                 numbering_style02_n1 = 0,
                 numbering_style03_n1 = 0,
@@ -38,6 +45,9 @@ Config.Interiors["arcadius_garages"] = {
                 numbering_style09_n1 = 0
             },
             lighting = {
+                set = function(object, decor)
+                    object.Lighting.Set(object.Part.Garage1, decor, true)
+                end,
                 [""] = 0,
                 lighting_option01 = 1000,
                 lighting_option02 = 1000,

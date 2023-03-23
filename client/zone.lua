@@ -1,5 +1,5 @@
 
-local zone = {}
+Zone = {}
 local garageZones = {}
 local garageBlips = {}
 
@@ -17,28 +17,36 @@ local function createGarageBlip(garageIndex)
     garageBlips[garageIndex] = blip
 end
 
-function zone.onGarageInsideZoneEnter(data)
-    local garageData = Config.Garages[data.garageIndex]
+function Zone.onGarageInsideZoneEnter(data)
+    if garageZones[data.garageIndex].insideZones[data.gateIndex].inZone then return end
     garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = true
 
     CreateThread(function()
+        local garageData = Config.Garages[data.garageIndex]
         lib.showTextUI(("[E] - Open %s Menu"):format(garageData.label))
+
         while garageZones[data.garageIndex].insideZones[data.gateIndex].inZone do
             if IsControlJustReleased(0, 38) then
-                Action.onGarageRequestToEnter(data)
-                break
+                if not cache.seat or cache.seat == -1 then
+                    Action.onGarageRequestToEnter(data)
+                    break
+                else
+                    lib.notify({title = "You need to be on foot or the driver"})
+                end
             end
             Wait(0)
         end
+
         lib.hideTextUI()
+        Zone.onGarageInsideZoneExit(data)
     end)
 end
 
-function zone.onGarageInsideZoneExit(data)
+function Zone.onGarageInsideZoneExit(data)
     garageZones[data.garageIndex].insideZones[data.gateIndex].inZone = false
 end
 
-function zone.onGarageZoneEnter(data)
+function Zone.onGarageZoneEnter(data)
     local garageData = Config.Garages[data.garageIndex]
 
     for i = 1, #garageData.gates do
@@ -46,8 +54,8 @@ function zone.onGarageZoneEnter(data)
             coords = garageData.gates[i].outside.coords,
             -- radius = garageData.gates[i].outside.coords,
             debug = Config.Debug,
-            onEnter = zone.onGarageInsideZoneEnter,
-            onExit = zone.onGarageInsideZoneExit,
+            onEnter = Zone.onGarageInsideZoneEnter,
+            onExit = Zone.onGarageInsideZoneExit,
             garageIndex = data.garageIndex,
             gateIndex = i
         })
@@ -55,15 +63,15 @@ function zone.onGarageZoneEnter(data)
     end
 end
 
-function zone.onGarageZoneExit(data)
+function Zone.onGarageZoneExit(data)
     for i = 1, #garageZones[data.garageIndex].insideZones do
-        zone.onGarageInsideZoneExit(garageZones[data.garageIndex].insideZones[i].zone)
+        Zone.onGarageInsideZoneExit(garageZones[data.garageIndex].insideZones[i].Zone)
         garageZones[data.garageIndex].insideZones[i].zone:remove()
         garageZones[data.garageIndex].insideZones[i] = nil
     end
 end
 
-function zone.setupGarage(garageIndex)
+function Zone.setupGarage(garageIndex)
     local garageData = Config.Garages[garageIndex]
     if not garageData.points then return error("poly points are not set") end
 
@@ -71,8 +79,8 @@ function zone.setupGarage(garageIndex)
         points = garageData.points,
         thickness = garageData.points_thickness,
         debug = Config.Debug,
-        onEnter = zone.onGarageZoneEnter,
-        onExit = zone.onGarageZoneExit,
+        onEnter = Zone.onGarageZoneEnter,
+        onExit = Zone.onGarageZoneExit,
         garageIndex = garageIndex,
     })
     garageZones[garageIndex] = {zone = polyZone, insideZones = {}}
@@ -85,11 +93,9 @@ local function initialize()
     SetTimeout(1000, function()
         print(("^7[^2%s^7] HAS LOADED ^5%s^7 GARAGES(S)"):format(Shared.currentResourceName:upper(), #Config.Garages))
         for index = 1, #Config.Garages do
-            zone.setupGarage(index)
+            Zone.setupGarage(index)
         end
     end)
 end
 
 initialize()
-
-return zone
