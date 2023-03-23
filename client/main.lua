@@ -67,8 +67,3 @@ function FadeScreen(state, duration)
     end
     return duration
 end
-
-function FadeScreenAndWait(duration)
-    Wait(FadeScreen(true, duration))
-    Wait(FadeScreen(false, duration))
-end

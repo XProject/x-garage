@@ -170,9 +170,10 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         options = options,
         onSideScroll = function(selected, scrollIndex, args)
             local decorKey = args.decorKey
+            local decors = interiorGarages[garageInteriorIndex].decors[decorKey]
             local currentDecorName = options[selected].values[scrollIndex]
-            local previousDecorPrice = interiorGarages[garageInteriorIndex].decors[decorKey][selectedDecors[decorKey]]
-            local currentDecorPrice = interiorGarages[garageInteriorIndex].decors[decorKey][currentDecorName]
+            local previousDecorPrice = decors[selectedDecors[decorKey]]
+            local currentDecorPrice = decors[currentDecorName]
 
             selectedDecors[decorKey] = currentDecorName
             garagePrice -= previousDecorPrice
@@ -185,7 +186,9 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 close = false
             }, optionsCount)
 
-            interiorGarages[garageInteriorIndex].decors[decorKey].set(interiorGarages[garageInteriorIndex].object, currentDecorName)
+            Wait(FadeScreen(true))
+            decors.set(interiorGarages[garageInteriorIndex].object, currentDecorName)
+            Wait(FadeScreen(false))
 
             -- until ox_lib updates
             lib.setMenuOptions("preview_garage", {
@@ -200,10 +203,12 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         end,
         onClose = function(keyPressed)
             if keyPressed then
+                Wait(FadeScreen(true))
                 if StopGaragePreview() then
-                    FadeScreenAndWait()
+                    Wait(FadeScreen(false))
                     Action.openUnboughtGarageMenu(data)
                 else
+                    Wait(FadeScreen(false))
                     lib.showMenu("preview_garage")
                 end
             end
