@@ -59,11 +59,19 @@ function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
 end
 
 function FadeScreen(state, duration)
-    duration = duration or 2000
+    duration = duration or 1000
     if state then
-        DoScreenFadeIn(duration or 2000)
+        DoScreenFadeOut(duration)
     else
-        DoScreenFadeOut(duration or 2000)
+        DoScreenFadeIn(duration)
     end
     return duration
 end
+
+local function onResourceStop(resource)
+    if resource ~= Shared.currentResourceName then return end
+    FadeScreen(false, duration)
+end
+
+AddEventHandler("onResourceStop", onResourceStop)
+AddEventHandler("onClientResourceStop", onResourceStop)

@@ -185,6 +185,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 args = {decors = selectedDecors},
                 close = false
             }, optionsCount)
+            lib.hideMenu(false)
 
             Wait(FadeScreen(true))
             decors.set(interiorGarages[garageInteriorIndex].object, currentDecorName)
@@ -197,7 +198,6 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 defaultIndex = scrollIndex,
                 args = {decorKey = decorKey}
             }, selected)
-            lib.hideMenu(false)
             lib.showMenu("preview_garage", selected)
             -- until ox_lib updates
         end,
@@ -220,7 +220,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
             if response then
                 lib.hideMenu()
                 Wait(FadeScreen(true))
-                while IsScreenFadedIn() do
+                while IsScreenFadedOut() do
                     if StopGaragePreview() then
                         Wait(FadeScreen(false))
                         Zone.onGarageInsideZoneEnter(data)
