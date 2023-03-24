@@ -144,6 +144,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 label = decorKey,
                 values = values,
                 defaultIndex = 1,
+                close = false,
                 args = {decorKey = decorKey}
             }
 
@@ -196,6 +197,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 label = decorKey,
                 values = options[selected].values,
                 defaultIndex = scrollIndex,
+                close = false,
                 args = {decorKey = decorKey}
             }, selected)
             lib.showMenu("preview_garage", selected)
@@ -206,7 +208,6 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 Wait(FadeScreen(true))
                 if StopGaragePreview() then
                     Wait(FadeScreen(false))
-                    Action.openUnboughtGarageMenu(data)
                 else
                     Wait(FadeScreen(false))
                     lib.showMenu("preview_garage")
@@ -223,7 +224,6 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 while IsScreenFadedOut() do
                     if StopGaragePreview() then
                         Wait(FadeScreen(false))
-                        Zone.onGarageInsideZoneEnter(data)
                         break
                     end
                     Wait(1000)
