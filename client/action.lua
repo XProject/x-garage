@@ -95,8 +95,8 @@ function Action.openUnboughtGarageMenu(data)
     },
     function(_, _, args)
         local interiorIndex = args.interiorIndex
-        local response = StartGaragePreview(data.garageIndex, interiorIndex)
-        if response then
+        Wait(FadeScreen(true))
+        if StartGaragePreview(data.garageIndex, interiorIndex) then
             -- player is now instanced and teleported to the interior entrance
             if type(interiorGarages[interiorIndex].object) == "string" then
                 interiorGarages[interiorIndex].object = exports["bob74_ipl"][interiorGarages[interiorIndex].object]()
@@ -107,8 +107,10 @@ function Action.openUnboughtGarageMenu(data)
             interiorGarages[interiorIndex].func.clear(interiorObject)
             interiorGarages[interiorIndex].func.loadDefault(interiorObject)
 
+            Wait(FadeScreen(false))
             Action.onGaragePreview(data, interiorIndex)
         else
+            Wait(FadeScreen(false))
             lib.showMenu("outside_unbought_garage_menu")
             lib.notify({title = "preview not started"})
         end
@@ -142,6 +144,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 label = decorKey,
                 values = values,
                 defaultIndex = 1,
+                close = false,
                 args = {decorKey = decorKey}
             }
 
@@ -167,11 +170,13 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         canClose = true,
         options = options,
         onSideScroll = function(selected, scrollIndex, args)
+            local decorKey = args.decorKey
+            local decors = interiorGarages[garageInteriorIndex].decors[decorKey]
             local currentDecorName = options[selected].values[scrollIndex]
-            local previousDecorPrice = interiorGarages[garageInteriorIndex].decors[args.decorKey][selectedDecors[args.decorKey]]
-            local currentDecorPrice = interiorGarages[garageInteriorIndex].decors[args.decorKey][currentDecorName]
+            local previousDecorPrice = decors[selectedDecors[decorKey]]
+            local currentDecorPrice = decors[currentDecorName]
 
-            selectedDecors[args.decorKey] = currentDecorName
+            selectedDecors[decorKey] = currentDecorName
             garagePrice -= previousDecorPrice
             garagePrice += currentDecorPrice
 
@@ -181,13 +186,32 @@ function Action.onGaragePreview(data, garageInteriorIndex)
                 args = {decors = selectedDecors},
                 close = false
             }, optionsCount)
+            lib.hideMenu(false)
 
-            interiorGarages[garageInteriorIndex].decors[args.decorKey].set(interiorGarages[garageInteriorIndex].object, currentDecorName)
+            Wait(FadeScreen(true))
+            decors.set(interiorGarages[garageInteriorIndex].object, currentDecorName)
+            Wait(FadeScreen(false))
+
+            -- until ox_lib updates
+            lib.setMenuOptions("preview_garage", {
+                label = decorKey,
+                values = options[selected].values,
+                defaultIndex = scrollIndex,
+                close = false,
+                args = {decorKey = decorKey}
+            }, selected)
+            lib.showMenu("preview_garage", selected)
+            -- until ox_lib updates
         end,
         onClose = function(keyPressed)
             if keyPressed then
-                StopGaragePreview()
-                Action.openUnboughtGarageMenu(data)
+                Wait(FadeScreen(true))
+                if StopGaragePreview() then
+                    Wait(FadeScreen(false))
+                else
+                    Wait(FadeScreen(false))
+                    lib.showMenu("preview_garage")
+                end
             end
         end
     },
@@ -195,8 +219,15 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         if args.decors then
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
-                StopGaragePreview()
-                Zone.onGarageInsideZoneEnter(data)
+                lib.hideMenu()
+                Wait(FadeScreen(true))
+                while IsScreenFadedOut() do
+                    if StopGaragePreview() then
+                        Wait(FadeScreen(false))
+                        break
+                    end
+                    Wait(1000)
+                end
             else
                 lib.notify({title = message})
             end

@@ -57,3 +57,21 @@ end
 function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
     return lib.callback.await(Shared.Callback.buyGarage, 1000, garageIndex, garageInteriorIndex, selectedDecors)
 end
+
+function FadeScreen(state, duration)
+    duration = duration or 1000
+    if state then
+        DoScreenFadeOut(duration)
+    else
+        DoScreenFadeIn(duration)
+    end
+    return duration
+end
+
+local function onResourceStop(resource)
+    if resource ~= Shared.currentResourceName then return end
+    FadeScreen(false, duration)
+end
+
+AddEventHandler("onResourceStop", onResourceStop)
+AddEventHandler("onClientResourceStop", onResourceStop)
