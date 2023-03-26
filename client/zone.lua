@@ -28,7 +28,7 @@ function Zone.onGarageInsideZoneEnter(data)
         while garageZones[data.garageIndex].insideZone.inZone do
             if IsControlJustReleased(0, 38) then
                 if not cache.seat or cache.seat == -1 then
-                    Action.onGarageRequestToEnter(data)
+                    Menu.onGarageRequestToEnter(data)
                     break
                 else
                     lib.notify({title = "You need to be on foot or the driver"})

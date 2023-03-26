@@ -14,13 +14,21 @@ lib.callback.register(Shared.Callback.stopGaragePreview, function(source)
     return exports["x-instance"]:removePlayerFromInstance(source)
 end)
 
+lib.callback.register(Shared.Callback.hasGarage, function(source, garageIndex, garageInteriorIndex)
+    local garageData = Config.Garages[garageIndex]
+    return HasGarage(source, garageIndex, garageData.interior, garageInteriorIndex)
+end)
+
 lib.callback.register(Shared.Callback.buyGarage, function(source, garageIndex, garageInteriorIndex, selectedDecors)
     -- TODO: distance/zone check
-    -- TODO: check if the garage is not already bought by source
 
     local garageData = Config.Garages[garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local garagePrice = garageData.price
+
+    if HasGarage(source, garageIndex, garageData.interior, garageInteriorIndex) then
+        return false, "already_own_garage"
+    end
 
     if interiorGarages[garageInteriorIndex].decors then
         for decorKey, decorData in pairs(interiorGarages[garageInteriorIndex].decors) do
@@ -30,6 +38,8 @@ lib.callback.register(Shared.Callback.buyGarage, function(source, garageIndex, g
     end
 
     -- TODO: check if source has enough money
+
+    OwnGarage(source, garageIndex, garageData.interior, garageInteriorIndex, selectedDecors)
 
     return true, "successful"
 end)

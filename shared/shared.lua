@@ -12,6 +12,8 @@ Shared.Callback.startGaragePreview = ("%s:%s"):format(Shared.currentResourceName
 
 Shared.Callback.stopGaragePreview = ("%s:%s"):format(Shared.currentResourceName, "stopGaragePreview")
 
+Shared.Callback.hasGarage = ("%s:%s"):format(Shared.currentResourceName, "hasGarage")
+
 Shared.Callback.buyGarage = ("%s:%s"):format(Shared.currentResourceName, "buyGarage")
 
 function dumpTable(table, nb)

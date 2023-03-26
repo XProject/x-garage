@@ -77,6 +77,10 @@ function StopGaragePreview()
     return response
 end
 
+function HasGarage(garageIndex, garageInteriorIndex)
+    return lib.callback.await(Shared.Callback.hasGarage, false, garageIndex, garageInteriorIndex)
+end
+
 function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
     return lib.callback.await(Shared.Callback.buyGarage, 1000, garageIndex, garageInteriorIndex, selectedDecors)
 end
@@ -84,11 +88,11 @@ end
 function FadeScreen(state, duration)
     duration = duration or 1000
     if state then
-        Spinner(true, "Loading")
         DoScreenFadeOut(duration)
+        Spinner(true, "Loading")
     else
-        Spinner(false)
         DoScreenFadeIn(duration)
+        Spinner(false)
     end
     Wait(duration)
 end

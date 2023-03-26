@@ -1,4 +1,4 @@
-table.insert(Config.Garages, {
+Config.Garages[1] = {
     label = "Arcadius Garages",
     interior = "arcadius_garages",
     price = 10000,
@@ -23,4 +23,4 @@ table.insert(Config.Garages, {
             vector4(-138.06, -586.77, 31.78, 68.72),
         }
     },
-})
+}

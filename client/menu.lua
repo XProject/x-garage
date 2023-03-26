@@ -1,6 +1,6 @@
-Action = {}
+Menu = {}
 
-function Action.onGarageRequestToEnter(data)
+function Menu.onGarageRequestToEnter(data)
     local garageData = Config.Garages[data.garageIndex]
 
     lib.registerMenu({
@@ -26,22 +26,22 @@ function Action.onGarageRequestToEnter(data)
     },
     function(_, _, args)
         if args.menu == "outside_bought_garage_menu" then
-            Action.openBoughtGarageMenu(data)
+            Menu.openBoughtGarageMenu(data)
         elseif args.menu == "outside_unbought_garage_menu" then
-            Action.openUnboughtGarageMenu(data)
+            Menu.openUnboughtGarageMenu(data)
         end
     end)
 
     lib.showMenu("outside_garage_menu")
 end
 
-function Action.openBoughtGarageMenu(data)
+function Menu.openBoughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
 
     for i = 1, #interiorGarages do
-        if true then -- TODO: check for ownership of the garage to show bought ones
+        if HasGarage(data.garageIndex, i) then
             options[#options+1] = {
                 label = ("Enter %s"):format(interiorGarages[i].label),
             }
@@ -56,7 +56,7 @@ function Action.openBoughtGarageMenu(data)
         options = options,
         onClose = function(keyPressed)
             if keyPressed then
-                Action.onGarageRequestToEnter(data)
+                Menu.onGarageRequestToEnter(data)
             end
         end
     },
@@ -67,13 +67,13 @@ function Action.openBoughtGarageMenu(data)
     lib.showMenu("outside_bought_garage_menu")
 end
 
-function Action.openUnboughtGarageMenu(data)
+function Menu.openUnboughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
 
     for i = 1, #interiorGarages do
-        if true then -- TODO: check for ownership of the garage to show un-bought ones
+        if not HasGarage(data.garageIndex, i) then -- TODO: check for ownership of the garage to show un-bought ones
             options[#options+1] = {
                 label = ("Buy %s"):format(interiorGarages[i].label),
                 args = {interiorIndex = i}
@@ -89,7 +89,7 @@ function Action.openUnboughtGarageMenu(data)
         options = options,
         onClose = function(keyPressed)
             if keyPressed then
-                Action.onGarageRequestToEnter(data)
+                Menu.onGarageRequestToEnter(data)
             end
         end
     },
@@ -108,7 +108,7 @@ function Action.openUnboughtGarageMenu(data)
             interiorGarages[interiorIndex].func.loadDefault(interiorObject)
 
             FadeScreen(false)
-            Action.onGaragePreview(data, interiorIndex)
+            Menu.onGaragePreview(data, interiorIndex)
         else
             FadeScreen(false)
             lib.showMenu("outside_unbought_garage_menu")
@@ -119,7 +119,7 @@ function Action.openUnboughtGarageMenu(data)
     lib.showMenu("outside_unbought_garage_menu")
 end
 
-function Action.onGaragePreview(data, garageInteriorIndex)
+function Menu.onGaragePreview(data, garageInteriorIndex)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
@@ -219,6 +219,7 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         if args.decors then
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
+                lib.notify({title = message})
                 lib.hideMenu()
                 FadeScreen(true)
                 while IsScreenFadedOut() do
