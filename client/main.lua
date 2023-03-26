@@ -18,6 +18,12 @@ end)
 Config.Garages = GlobalState[Shared.State.globalGarages]
 local coordsBeforeGaragePreview
 local vehicleBeforeGaragePreview
+local insideGarage
+
+local duiObj = CreateDui("https://simg.nicepng.com/png/small/234-2340201_exit-sign-wayfinding-fire-door-emergency-comments-exit.png", 256, 256)
+local duiHandle = GetDuiHandle(duiObj)
+local dict = CreateRuntimeTxd("markerDict") -- dictionary name
+local txd = CreateRuntimeTextureFromDuiHandle(dict, "markerTxt", duiHandle) -- texture name
 
 ---@diagnostic disable-next-line: param-type-mismatch
 AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, value)
@@ -95,6 +101,66 @@ function FadeScreen(state, duration)
         Spinner(false)
     end
     Wait(duration)
+end
+
+function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
+    FadeScreen(true)
+    if not StartGaragePreview(garageIndex, garageInteriorIndex) then -- TODO: change this since it adds player to preview_garage instance
+        FadeScreen(false)
+        return
+    end
+
+    local garageData = Config.Garages[garageIndex]
+    local interiorData = Config.Interiors[garageData.interior][garageInteriorIndex]
+    insideGarage = ("%s:%s"):format(garageIndex, garageInteriorIndex)
+
+    if type(interiorData.object) == "string" then
+        interiorData.object = exports["bob74_ipl"][interiorData.object]()
+    end
+
+    local interiorObject = interiorData.object
+
+    interiorData.func.clear(interiorObject)
+    interiorData.func.loadDefault(interiorObject)
+
+    for decorKey, decorName in pairs(selectedDecors) do
+        interiorData.decors[decorKey].set(interiorObject, decorName)
+    end
+
+    FadeScreen(false)
+
+    CreateThread(function()
+        local _insideGarage = insideGarage
+        while _insideGarage == insideGarage do
+            if IsPauseMenuActive() then
+                if IsMinimapInInterior() then
+                    HideMinimapExteriorMapThisFrame()
+                else
+                    HideMinimapInteriorMapThisFrame()
+                    SetPlayerBlipPositionThisFrame(interiorData.coords.x, interiorData.coords.y)
+                end
+            end
+
+            DrawMarker(9, interiorData.coords.x, interiorData.coords.y, interiorData.coords.z, 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 255, 255, true, true, 2, false, "markerDict", "markerTxt", false)
+
+            if #(cache.coords - vector3(interiorData.coords.x, interiorData.coords.y, interiorData.coords.z)) <= 2 then
+                if IsControlJustReleased(0, 38) then
+                    FadeScreen(true)
+                    while IsScreenFadedOut() do
+                        if StopGaragePreview() then
+                            break
+                        end
+                        Wait(1000)
+                    end
+                    Teleport(cache.ped, garageData.outside.coords)
+                    FadeScreen(false)
+                    insideGarage = nil
+                    break
+                end
+            end
+            Wait(0)
+        end
+    end)
 end
 
 local function onResourceStop(resource)

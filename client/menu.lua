@@ -5,7 +5,7 @@ function Menu.onGarageRequestToEnter(data)
 
     lib.registerMenu({
         id = "outside_garage_menu",
-        title = ("%s - %s"):format(Shared.currentResourceName, garageData.label),
+        title = Config.Locales.garage_system,
         disableInput = true,
         canClose = true,
         options = {
@@ -39,18 +39,26 @@ function Menu.openBoughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
+    local optionsCount = 0
 
     for i = 1, #interiorGarages do
         if HasGarage(data.garageIndex, i) then
-            options[#options+1] = {
+            optionsCount += 1
+            options[optionsCount] = {
                 label = ("Enter %s"):format(interiorGarages[i].label),
+                args = {garageInteriorIndex = i}
             }
         end
     end
 
+    if optionsCount == 0 then
+        lib.notify({title = Config.Locales.garage_system, description = Config.Locales.no_bought_garages, type = "error"})
+        return Menu.onGarageRequestToEnter(data)
+    end
+
     lib.registerMenu({
         id = "outside_bought_garage_menu",
-        title = ("%s - %s"):format(Shared.currentResourceName, garageData.label),
+        title = Config.Locales.garage_system,
         disableInput = true,
         canClose = true,
         options = options,
@@ -61,7 +69,7 @@ function Menu.openBoughtGarageMenu(data)
         end
     },
     function(_, _, args)
-
+        EnterOwnGarage(data.garageIndex, args.garageInteriorIndex, {}) -- TODO: send proper selectedDecors
     end)
 
     lib.showMenu("outside_bought_garage_menu")
@@ -71,19 +79,26 @@ function Menu.openUnboughtGarageMenu(data)
     local garageData = Config.Garages[data.garageIndex]
     local interiorGarages = Config.Interiors[garageData.interior]
     local options = {}
+    local optionsCount = 0
 
     for i = 1, #interiorGarages do
         if not HasGarage(data.garageIndex, i) then -- TODO: check for ownership of the garage to show un-bought ones
-            options[#options+1] = {
+            optionsCount += 1
+            options[optionsCount] = {
                 label = ("Buy %s"):format(interiorGarages[i].label),
                 args = {interiorIndex = i}
             }
         end
     end
 
+    if optionsCount == 0 then
+        lib.notify({title = Config.Locales.garage_system, description = Config.Locales.no_unbought_garages, type = "error"})
+        return Menu.onGarageRequestToEnter(data)
+    end
+
     lib.registerMenu({
         id = "outside_unbought_garage_menu",
-        title = ("%s - %s"):format(Shared.currentResourceName, garageData.label),
+        title = Config.Locales.garage_system,
         disableInput = true,
         canClose = true,
         options = options,
@@ -112,7 +127,6 @@ function Menu.openUnboughtGarageMenu(data)
         else
             FadeScreen(false)
             lib.showMenu("outside_unbought_garage_menu")
-            lib.notify({title = "preview not started"})
         end
     end)
 
@@ -165,7 +179,7 @@ function Menu.onGaragePreview(data, garageInteriorIndex)
 
     lib.registerMenu({
         id = "preview_garage",
-        title = ("%s - %s"):format(Shared.currentResourceName, interiorGarages[garageInteriorIndex].label),
+        title = interiorGarages[garageInteriorIndex].label,
         disableInput = false,
         canClose = true,
         options = options,
@@ -219,7 +233,7 @@ function Menu.onGaragePreview(data, garageInteriorIndex)
         if args.decors then
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
-                lib.notify({title = message})
+                lib.notify({title = Config.Locales.garage_system, description = message, type = "success"})
                 lib.hideMenu()
                 FadeScreen(true)
                 while IsScreenFadedOut() do
@@ -230,7 +244,7 @@ function Menu.onGaragePreview(data, garageInteriorIndex)
                     Wait(1000)
                 end
             else
-                lib.notify({title = message})
+                lib.notify({title = Config.Locales.garage_system, description = message, type = "error"})
             end
         end
     end)

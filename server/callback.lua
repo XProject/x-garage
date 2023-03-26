@@ -27,7 +27,7 @@ lib.callback.register(Shared.Callback.buyGarage, function(source, garageIndex, g
     local garagePrice = garageData.price
 
     if HasGarage(source, garageIndex, garageData.interior, garageInteriorIndex) then
-        return false, "already_own_garage"
+        return false, Config.Locales.already_own_garage
     end
 
     if interiorGarages[garageInteriorIndex].decors then
@@ -39,7 +39,9 @@ lib.callback.register(Shared.Callback.buyGarage, function(source, garageIndex, g
 
     -- TODO: check if source has enough money
 
-    OwnGarage(source, garageIndex, garageData.interior, garageInteriorIndex, selectedDecors)
+    if not OwnGarage(source, garageIndex, garageData.interior, garageInteriorIndex, selectedDecors) then
+        return false, "error_on_OwnGarage_function"
+    end
 
-    return true, "successful"
+    return true, Config.Locales.garage_bought
 end)
