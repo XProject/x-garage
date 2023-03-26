@@ -95,7 +95,7 @@ function Action.openUnboughtGarageMenu(data)
     },
     function(_, _, args)
         local interiorIndex = args.interiorIndex
-        Wait(FadeScreen(true))
+        FadeScreen(true)
         if StartGaragePreview(data.garageIndex, interiorIndex) then
             -- player is now instanced and teleported to the interior entrance
             if type(interiorGarages[interiorIndex].object) == "string" then
@@ -107,10 +107,10 @@ function Action.openUnboughtGarageMenu(data)
             interiorGarages[interiorIndex].func.clear(interiorObject)
             interiorGarages[interiorIndex].func.loadDefault(interiorObject)
 
-            Wait(FadeScreen(false))
+            FadeScreen(false)
             Action.onGaragePreview(data, interiorIndex)
         else
-            Wait(FadeScreen(false))
+            FadeScreen(false)
             lib.showMenu("outside_unbought_garage_menu")
             lib.notify({title = "preview not started"})
         end
@@ -188,9 +188,9 @@ function Action.onGaragePreview(data, garageInteriorIndex)
             }, optionsCount)
             lib.hideMenu(false)
 
-            Wait(FadeScreen(true))
+            FadeScreen(true)
             decors.set(interiorGarages[garageInteriorIndex].object, currentDecorName)
-            Wait(FadeScreen(false))
+            FadeScreen(false)
 
             -- until ox_lib updates
             lib.setMenuOptions("preview_garage", {
@@ -205,11 +205,11 @@ function Action.onGaragePreview(data, garageInteriorIndex)
         end,
         onClose = function(keyPressed)
             if keyPressed then
-                Wait(FadeScreen(true))
+                FadeScreen(true)
                 if StopGaragePreview() then
-                    Wait(FadeScreen(false))
+                    FadeScreen(false)
                 else
-                    Wait(FadeScreen(false))
+                    FadeScreen(false)
                     lib.showMenu("preview_garage")
                 end
             end
@@ -220,10 +220,10 @@ function Action.onGaragePreview(data, garageInteriorIndex)
             local response, message = BuyGarage(data.garageIndex, garageInteriorIndex, selectedDecors)
             if response then
                 lib.hideMenu()
-                Wait(FadeScreen(true))
+                FadeScreen(true)
                 while IsScreenFadedOut() do
                     if StopGaragePreview() then
-                        Wait(FadeScreen(false))
+                        FadeScreen(false)
                         break
                     end
                     Wait(1000)

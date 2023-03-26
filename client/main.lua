@@ -24,6 +24,33 @@ AddStateBagChangeHandler(Shared.State.globalGarages, nil, function(bagName, _, v
     Config.Garages = value
 end)
 
+function Teleport(entity, coords)
+    FreezeEntityPosition(entity, true)
+    NetworkFadeOutEntity(entity, false, false)
+
+    ---@diagnostic disable-next-line: missing-parameter
+    SetEntityCoords(entity, coords.x, coords.y, coords.z)
+    SetEntityHeading(entity, coords.w)
+
+    while not HasCollisionLoadedAroundEntity(entity) do
+        RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+        Wait(1000)
+    end
+
+    NetworkFadeInEntity(entity, false)
+    FreezeEntityPosition(entity, false)
+end
+
+function Spinner(state, string)
+    if state then
+        AddTextEntry(string, string)
+        BeginTextCommandBusyspinnerOn(string)
+        EndTextCommandBusyspinnerOn(4)
+    else
+        BusyspinnerOff()
+    end
+end
+
 function StartGaragePreview(garageIndex, interiorIndex)
     local response = lib.callback.await(Shared.Callback.startGaragePreview, 1000)
     if response then
@@ -31,10 +58,7 @@ function StartGaragePreview(garageIndex, interiorIndex)
         vehicleBeforeGaragePreview = cache.seat == -1 and cache.vehicle
         local garageInterior = Config.Garages[garageIndex].interior
         local garageCoords = Config.Interiors[garageInterior][interiorIndex].coords
-
-        ---@diagnostic disable-next-line: missing-parameter
-        SetEntityCoords(cache.ped, garageCoords.x, garageCoords.y, garageCoords.z)
-        SetEntityHeading(cache.ped, garageCoords.w)
+        Teleport(cache.ped, garageCoords)
     end
     return response
 end
@@ -42,8 +66,7 @@ end
 function StopGaragePreview()
     local response = lib.callback.await(Shared.Callback.stopGaragePreview, 1000)
     if response then
-        ---@diagnostic disable-next-line: missing-parameter
-        SetEntityCoords(cache.ped, coordsBeforeGaragePreview.x, coordsBeforeGaragePreview.y, coordsBeforeGaragePreview.z)
+        Teleport(cache.ped, coordsBeforeGaragePreview)
         if vehicleBeforeGaragePreview then
             SetPedIntoVehicle(cache.ped, vehicleBeforeGaragePreview, -1)
         end
@@ -61,11 +84,13 @@ end
 function FadeScreen(state, duration)
     duration = duration or 1000
     if state then
+        Spinner(true, "Loading")
         DoScreenFadeOut(duration)
     else
+        Spinner(false)
         DoScreenFadeIn(duration)
     end
-    return duration
+    Wait(duration)
 end
 
 local function onResourceStop(resource)
