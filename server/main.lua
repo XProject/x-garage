@@ -20,6 +20,16 @@ function HasGarage(source, garageIndex, garageInterior, garageInteriorIndex)
     return result ~= nil
 end
 
+function GetGarageDecors(source, garageIndex, garageInterior, garageInteriorIndex)
+    local owner = GetIdentifier(source)
+    local garage = garageIndex
+    local interior = garageInterior
+    local interior_index = garageInteriorIndex
+
+    local result = MySQL.scalar.await("SELECT decors FROM player_garages WHERE owner = ? AND garage = ? AND interior = ? AND interior_index = ?", {owner, garage, interior, interior_index})
+    return result and json.decode(result) or {}
+end
+
 function OwnGarage(source, garageIndex, garageInterior, garageInteriorIndex, selectedDecors)
     local owner = GetIdentifier(source)
     local garage = garageIndex

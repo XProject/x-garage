@@ -16,6 +16,8 @@ Shared.Callback.hasGarage = ("%s:%s"):format(Shared.currentResourceName, "hasGar
 
 Shared.Callback.buyGarage = ("%s:%s"):format(Shared.currentResourceName, "buyGarage")
 
+Shared.Callback.getGarageDecors = ("%s:%s"):format(Shared.currentResourceName, "getGarageDecors")
+
 function dumpTable(table, nb)
     if nb == nil then
         nb = 0

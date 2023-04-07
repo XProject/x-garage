@@ -69,7 +69,8 @@ function Menu.openBoughtGarageMenu(data)
         end
     },
     function(_, _, args)
-        EnterOwnGarage(data.garageIndex, args.garageInteriorIndex, {}) -- TODO: send proper selectedDecors
+        local decors = GetGarageDecors(data.garageIndex, args.garageInteriorIndex)
+        EnterOwnGarage(data.garageIndex, args.garageInteriorIndex, decors) -- TODO: send proper selectedDecors
     end)
 
     lib.showMenu("outside_bought_garage_menu")

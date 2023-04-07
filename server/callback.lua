@@ -45,3 +45,10 @@ lib.callback.register(Shared.Callback.buyGarage, function(source, garageIndex, g
 
     return true, Config.Locales.garage_bought
 end)
+
+lib.callback.register(Shared.Callback.getGarageDecors, function(source, garageIndex, garageInteriorIndex)
+    -- TODO: distance/zone check
+    local garageData = Config.Garages[garageIndex]
+
+    return GetGarageDecors(source, garageIndex, garageData.interior, garageInteriorIndex)
+end)

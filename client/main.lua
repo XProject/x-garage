@@ -87,6 +87,10 @@ function HasGarage(garageIndex, garageInteriorIndex)
     return lib.callback.await(Shared.Callback.hasGarage, false, garageIndex, garageInteriorIndex)
 end
 
+function GetGarageDecors(garageIndex, garageInteriorIndex)
+    return lib.callback.await(Shared.Callback.getGarageDecors, 1000, garageIndex, garageInteriorIndex)
+end
+
 function BuyGarage(garageIndex, garageInteriorIndex, selectedDecors)
     return lib.callback.await(Shared.Callback.buyGarage, 1000, garageIndex, garageInteriorIndex, selectedDecors)
 end
@@ -126,6 +130,8 @@ function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
     for decorKey, decorName in pairs(selectedDecors) do
         interiorData.decors[decorKey].set(interiorObject, decorName)
     end
+
+    print(dumpTable(selectedDecors))
 
     FadeScreen(false)
 
