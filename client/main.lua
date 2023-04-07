@@ -19,7 +19,7 @@ Config.Garages = GlobalState[Shared.State.globalGarages]
 local coordsBeforeGaragePreview
 local vehicleBeforeGaragePreview
 local insideGarage
-local loadedVehicles = {}
+local spawnedVehicles = {}
 
 local duiObj = CreateDui("https://simg.nicepng.com/png/small/234-2340201_exit-sign-wayfinding-fire-door-emergency-comments-exit.png", 256, 256)
 local duiHandle = GetDuiHandle(duiObj)
@@ -108,6 +108,13 @@ function FadeScreen(state, duration)
     Wait(duration)
 end
 
+local function deletedSpawnedVehicles()
+    for i = 1, #spawnedVehicles do
+        DeleteEntity(spawnedVehicles[i])
+        spawnedVehicles[i] = nil
+    end
+end
+
 function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
     FadeScreen(true)
     if not StartGaragePreview(garageIndex, garageInteriorIndex) then -- TODO: change this since it adds player to preview_garage instance
@@ -137,7 +144,7 @@ function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
         local model = `adder`
         RequestModel(model)
         local vehicle = CreateVehicle(model, spawnCoords.x, spawnCoords.y, spawnCoords.z, spawnCoords.w, false, false)
-        loadedVehicles[#loadedVehicles+1] = vehicle
+        spawnedVehicles[#spawnedVehicles+1] = vehicle
         SetVehicleOnGroundProperly(vehicle)
         SetModelAsNoLongerNeeded(model)
     end
@@ -175,16 +182,14 @@ function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
             end
             Wait(0)
         end
-        for i = 1, #loadedVehicles do
-            DeleteEntity(loadedVehicles[i])
-            loadedVehicles[i] = nil
-        end
+        deletedSpawnedVehicles()
     end)
 end
 
 local function onResourceStop(resource)
     if resource ~= Shared.currentResourceName then return end
-    FadeScreen(false, duration)
+    deletedSpawnedVehicles()
+    FadeScreen(false)
 end
 
 AddEventHandler("onResourceStop", onResourceStop)
