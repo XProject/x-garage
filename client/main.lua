@@ -19,6 +19,7 @@ Config.Garages = GlobalState[Shared.State.globalGarages]
 local coordsBeforeGaragePreview
 local vehicleBeforeGaragePreview
 local insideGarage
+local loadedVehicles = {}
 
 local duiObj = CreateDui("https://simg.nicepng.com/png/small/234-2340201_exit-sign-wayfinding-fire-door-emergency-comments-exit.png", 256, 256)
 local duiHandle = GetDuiHandle(duiObj)
@@ -131,7 +132,15 @@ function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
         interiorData.decors[decorKey].set(interiorObject, decorName)
     end
 
-    print(dumpTable(selectedDecors))
+    for i = 1, #interiorData.spawns do
+        local spawnCoords = interiorData.spawns[i]
+        local model = `adder`
+        RequestModel(model)
+        local vehicle = CreateVehicle(model, spawnCoords.x, spawnCoords.y, spawnCoords.z, spawnCoords.w, false, false)
+        loadedVehicles[#loadedVehicles+1] = vehicle
+        SetVehicleOnGroundProperly(vehicle)
+        SetModelAsNoLongerNeeded(model)
+    end
 
     FadeScreen(false)
 
@@ -165,6 +174,10 @@ function EnterOwnGarage(garageIndex, garageInteriorIndex, selectedDecors)
                 end
             end
             Wait(0)
+        end
+        for i = 1, #loadedVehicles do
+            DeleteEntity(loadedVehicles[i])
+            loadedVehicles[i] = nil
         end
     end)
 end
